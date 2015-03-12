@@ -96,7 +96,31 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
   val finishedDrivers = new mutable.HashMap[String, ClusterTaskState]()
   val nextDriverNumber: AtomicLong = new AtomicLong(0)
   var appId: String = _
-  private val queue = new LinkedBlockingQueue[DriverSubmission](capacity)
+
+  private val queue = new collection.mutable.Queue[DriverSubmission]()
+
+  private def enqueue(ds: DriverSubmission): Boolean =
+    stateLock.synchronized {
+      if (queue.size >= capacity) {
+        false
+      } else if (queue.exists { _.submissionId == ds.submissionId }) {
+        false // TODO: do this check somewhere else, and don't return false
+      } else {
+        queue.enqueue(ds)
+        true
+      }
+    }
+
+  private def dequeue(submissionId: String): Boolean =
+    stateLock.synchronized {
+      !queue.dequeueAll { _.submissionId == submissionId }.isEmpty
+    }
+
+  private def queuedElements: Iterator[DriverSubmission] =
+    // TODO: check if iterator doesn't break synchronization
+    stateLock.synchronized {
+      queue.iterator
+    }
 
   def createDateFormat = new SimpleDateFormat("yyyyMMddHHmmss")  // For application IDs
 
@@ -109,7 +133,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
     val submitDate: Date = new Date()
     val submissionId: String = newDriverId(submitDate)
     val submission = new DriverSubmission(submissionId, req, submitDate, submitDate)
-    if (queue.offer(submission)) {
+    if (enqueue(submission)) {
       SubmitResponse(submissionId, true, None)
     } else {
       SubmitResponse(submissionId, false, Option("Already reached maximum submission size"))
@@ -128,7 +152,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
       }
     }.orElse {
       // Check if submission is queued
-      if (queue.remove(new DriverSubmission(submissionId, null, null, null))) {
+      if (dequeue(submissionId)) {
         Some(KillResponse(submissionId, true, Option("Removed driver while it's still pending")))
       } else {
         None
@@ -234,15 +258,15 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
   override def resourceOffers(driver: SchedulerDriver, offers: JList[Offer]): Unit = {
     // We should try to schedule all the drivers if the offers fit.
 
-    // Non-blocking poll.
-    val submissionOption = Option(queue.poll(0, TimeUnit.SECONDS))
+    // filtering submissions for later
+    val now = new Date()
+    val submissionsToCheck = queuedElements.filter { ds => ds.nextRunDate.before(now) }
 
-    if (submissionOption.isEmpty) {
+    if (submissionsToCheck.isEmpty) {
       offers.foreach(o => driver.declineOffer(o.getId))
-      return
-    }
+    } else {
 
-    val submission = submissionOption.get
+    val submission = submissionsToCheck.next()
 
     var remainingOffers = offers
 
@@ -280,6 +304,8 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
       //TODO: logDebug("")
       driver.launchTasks(Collections.singleton(offer.getId), Collections.singleton(taskInfo))
 
+      dequeue(submission.submissionId)
+
       stateLock.synchronized {
         launchedDrivers(submission.submissionId) =
           ClusterTaskState(submission, taskId, offer.getSlaveId,
@@ -290,6 +316,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
     }
 
     remainingOffers.foreach(o => driver.declineOffer(o.getId))
+    }
   }
 
   def getState(): ClusterSchedulerState = {
@@ -363,12 +390,12 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
         
         if (canRelaunch(status.getState) && submission.req.desc.supervise) {
           
-          val exponentialThreshold = 10000
+          val exponentialThreshold = 30000
           
           val now = System.currentTimeMillis()
           
           val newSubmission =
-          if (now - taskState.startDate.getTime < exponentialThreshold) {
+          if (now - taskState.startDate.getTime >= exponentialThreshold) {
                 new DriverSubmission(
                     submission.submissionId,
                     submission.req,
@@ -376,15 +403,17 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
                     new Date,
                     0)
           } else {
+                val wait= Math.pow(2, submission.retries).toLong
+                logInfo(s"backing up for $wait seconds")
                 new DriverSubmission(
                     submission.submissionId,
                     submission.req,
                     submission.submitDate,
-                    new Date(now + Math.pow(2, submission.retries).toLong * 1000),
+                    new Date(now + wait * 1000),
                     submission.retries + 1)
           }
 
-          queue.offer(newSubmission)
+          enqueue(newSubmission)
           // TODO: special state for submission that could not be restarted
           //       because the submission queue was full?
         }
