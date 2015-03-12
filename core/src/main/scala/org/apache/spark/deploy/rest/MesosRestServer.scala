@@ -97,6 +97,8 @@ class MesosSubmitRequestServlet(
     // Construct driver description
     val conf = new SparkConf(false)
       .setAll(sparkProperties)
+      
+    logInfo(conf.toDebugString)
 
     val extraClassPath = driverExtraClassPath.toSeq.flatMap(_.split(File.pathSeparator))
     val extraLibraryPath = driverExtraLibraryPath.toSeq.flatMap(_.split(File.pathSeparator))

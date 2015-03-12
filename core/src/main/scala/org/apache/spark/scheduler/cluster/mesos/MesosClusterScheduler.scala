@@ -40,7 +40,9 @@ case class DriverRequest(desc: DriverDescription, conf: SparkConf)
 private[spark] class DriverSubmission(
     val submissionId: String,
     val req: DriverRequest,
-    val submitDate: Date) {
+    val submitDate: Date,
+    val nextRunDate: Date,
+    val retries: Int = 0) {
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[DriverSubmission]
 
@@ -106,7 +108,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
   def submitDriver(req: DriverRequest): SubmitResponse = {
     val submitDate: Date = new Date()
     val submissionId: String = newDriverId(submitDate)
-    val submission = new DriverSubmission(submissionId, req, submitDate)
+    val submission = new DriverSubmission(submissionId, req, submitDate, submitDate)
     if (queue.offer(submission)) {
       SubmitResponse(submissionId, true, None)
     } else {
@@ -126,7 +128,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
       }
     }.orElse {
       // Check if submission is queued
-      if (queue.remove(new DriverSubmission(submissionId, null, null))) {
+      if (queue.remove(new DriverSubmission(submissionId, null, null, null))) {
         Some(KillResponse(submissionId, true, Option("Removed driver while it's still pending")))
       } else {
         None
@@ -307,7 +309,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
 
   def getStatus(submissionId: String): StatusResponse = {
     stateLock.synchronized {
-      if (queue.contains(new DriverSubmission(submissionId, null, null))) {
+      if (queue.contains(new DriverSubmission(submissionId, null, null, null))) {
         return StatusResponse(submissionId, true, Option("Driver is queued for launch"))
       } else if (launchedDrivers.contains(submissionId)) {
         return StatusResponse(submissionId, true, Option("Driver is running"))
@@ -344,7 +346,7 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
 
   def canRelaunch(state: TaskState): Boolean = {
     state == TaskState.TASK_FAILED ||
-      state == TaskState.TASK_KILLED ||
+//      state == TaskState.TASK_KILLED || // TODO: relaunch on kill?
       state == TaskState.TASK_LOST
   }
 
@@ -352,9 +354,39 @@ private[spark] class MesosClusterScheduler(conf: SparkConf)
     val taskId = status.getTaskId.getValue
     stateLock.synchronized {
       if (launchedDrivers.contains(taskId)) {
-        if (canRelaunch(status.getState)) {
-          // TODO: We should try to relaunch if supervise is turned on.
-          // Also check how many times we've retried.
+        val taskState = launchedDrivers(taskId)
+        val submission = taskState.submission
+        
+        logInfo(status.getState.toString())
+        logInfo(
+     s"canRelaunch: ${canRelaunch(status.getState)}, supervise: ${submission.req.desc.supervise}")
+        
+        if (canRelaunch(status.getState) && submission.req.desc.supervise) {
+          
+          val exponentialThreshold = 10000
+          
+          val now = System.currentTimeMillis()
+          
+          val newSubmission =
+          if (now - taskState.startDate.getTime < exponentialThreshold) {
+                new DriverSubmission(
+                    submission.submissionId,
+                    submission.req,
+                    submission.submitDate,
+                    new Date,
+                    0)
+          } else {
+                new DriverSubmission(
+                    submission.submissionId,
+                    submission.req,
+                    submission.submitDate,
+                    new Date(now + Math.pow(2, submission.retries).toLong * 1000),
+                    submission.retries + 1)
+          }
+
+          queue.offer(newSubmission)
+          // TODO: special state for submission that could not be restarted
+          //       because the submission queue was full?
         }
 
         val driverState = getDriverState(status.getState)
