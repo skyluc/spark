@@ -96,7 +96,7 @@ private[spark] object RDDOperationScope {
       sc: SparkContext,
       allowNesting: Boolean = false)(body: => T): T = {
     val callerMethodName = Thread.currentThread.getStackTrace()(3).getMethodName
-    withScope[T](sc, callerMethodName, allowNesting)(body)
+    withScopeName[T](sc, callerMethodName, allowNesting)(body)
   }
 
   /**
@@ -108,7 +108,7 @@ private[spark] object RDDOperationScope {
    *
    * Note: Return statements are NOT allowed in body.
    */
-  private[spark] def withScope[T](
+  private[spark] def withScopeName[T](
       sc: SparkContext,
       name: String,
       allowNesting: Boolean = false)(body: => T): T = {
