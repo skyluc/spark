@@ -1763,6 +1763,10 @@
         <jline.version>2.12.1</jline.version>
         <jline.groupid>jline</jline.groupid>
       </properties>
+      <modules>
+        <module>external/kafka</module>
+        <module>external/kafka-assembly</module>
+      </modules>
     </profile>
 
     <!--
