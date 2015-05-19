@@ -77,6 +77,8 @@ private[streaming] class ReceiverSupervisorImpl(
         case CleanupOldBlocks(threshTime) =>
           logDebug("Received delete old batch signal")
           cleanupOldBlocks(threshTime)
+        case BatchProcessingSpeedInfo(batchTime, elemsPerBatch) =>
+          logDebug(s"Received update for $streamId at ${batchTime.milliseconds} : $elemsPerBatch")
       }
     })
 
