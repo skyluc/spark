@@ -98,7 +98,9 @@ class LatestSpeedListener(batchDuration: Duration) extends StreamingListener {
         latestTime = Some(newTime)
         val ratio = delay.get.toDouble / batchDuration.milliseconds
         val elements = batchCompleted.batchInfo.streamIdToNumRecords
-        streamIdToElemsPerBatch = Some(elements.mapValues{ x => math.round(x / ratio) })
+        // This is a 'floor' so as not to overestimate processed elements
+        // per batch
+        streamIdToElemsPerBatch = Some(elements.mapValues{ x => math.floor(x / ratio).toLong })
       }
     }
   }

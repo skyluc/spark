@@ -140,10 +140,13 @@ class ReceiverTracker(ssc: StreamingContext, skipReceiverLaunch: Boolean = false
    * processed per batch interval.
    */
   def refreshLatestSpeeds(batchTime: Time, streamIdToElemsPerBatch: Map[Int, Long]){
+    val blockIntervalMs = ssc.conf.getTimeAsMs("spark.streaming.blockInterval", "200ms")
+    val ratio = blockIntervalMs.toFloat / ssc.graph.batchDuration.milliseconds
     for {(sId, speed) <- streamIdToElemsPerBatch
         info <- receiverInfo.get(sId)
         eP <- Option(info.endpoint)}
-    eP.send(BatchProcessingSpeedInfo(batchTime, speed))
+    // A 'floor', so as not to overestimate elements per block
+    if (speed > 0) eP.send(BatchProcessingSpeedInfo(batchTime, math.floor( speed * ratio ).toInt))
   }
 
   /** Register a receiver */
