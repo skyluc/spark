@@ -18,6 +18,9 @@
 package org.apache.spark.streaming.receiver
 
 import scala.collection.mutable.ArrayBuffer
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.Random
+import org.apache.spark.util.random.GapSamplingIterator
 
 /**
  * This class provides a congestion strategy that ignores
@@ -30,4 +33,63 @@ class IgnoreCongestionStrategy extends CongestionStrategy {
 
   override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
                                      nextBuffer: ArrayBuffer[Any]): Unit = {}
+}
+
+class PushBackCongestionStrategy(blockInterval: Long) extends CongestionStrategy {
+
+  private val latestBound = new AtomicInteger(-1)
+
+  override def onBlockBoundUpdate(bound:Int): Unit = latestBound.set(bound)
+
+  override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
+                                     nextBuffer: ArrayBuffer[Any]): Unit = {
+    val bound = latestBound.get()
+    val difference = currentBuffer.size - bound
+    if (bound > 0 && difference > 0) {
+      nextBuffer ++=: currentBuffer.takeRight(difference)
+      currentBuffer.reduceToSize(bound)
+    }
+    // we've had our fill for the amount of time it would take us to process the difference
+    // use the fact this is synchronized with data ingestion to prevent more data coming in
+    val delay = math.round( blockInterval * (difference.toFloat / bound) )
+    Thread.sleep(delay)
+  }
+
+}
+
+class DropCongestionStrategy extends CongestionStrategy {
+
+  private val latestBound = new AtomicInteger(-1)
+
+  override def onBlockBoundUpdate(bound:Int): Unit = latestBound.set(bound)
+
+  override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
+                                     nextBuffer: ArrayBuffer[Any]): Unit = {
+    val bound = latestBound.get()
+    val difference = currentBuffer.size - bound
+    if (bound > 0 && difference > 0) {
+      currentBuffer.reduceToSize(bound)
+    }
+  }
+
+}
+
+class SamplingCongestionStrategy extends CongestionStrategy {
+
+  private val rng = new Random()
+  private val latestBound = new AtomicInteger(-1)
+
+  override def onBlockBoundUpdate(bound:Int): Unit = latestBound.set(bound)
+
+  override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
+                                     nextBuffer: ArrayBuffer[Any]): Unit = {
+    val bound = latestBound.get()
+    val f = bound.toFloat / currentBuffer.size
+    if (f < 1.0) {
+      val gapSampler = new GapSamplingIterator(currentBuffer.toIterator, f, rng)
+      currentBuffer.clear()
+      currentBuffer ++= gapSampler
+    }
+  }
+
 }
