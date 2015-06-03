@@ -105,7 +105,7 @@ class LatestSpeedListener(batchDuration: Duration) extends StreamingListener {
     }
   }
 
-  def getSpeedForStreamId(streamId:Int): Option[Long] = {
+  def getSpeedForStreamId(streamId: Int): Option[Long] = {
     streamIdToElemsPerBatch.flatMap(_.get(streamId))
   }
 

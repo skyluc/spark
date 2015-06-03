@@ -131,8 +131,8 @@ class StreamingListenerSuite extends TestSuiteBase with Matchers {
     }
   }
 
-  test("latest speed reporting") {
-    val midInput = (1 to 4).map(Seq(_)).toSeq
+  ignore("latest speed reporting") {
+    val midInput = (1 to 40).map(Seq(_)).toSeq
     val midSsc = setupStreams(midInput, operation)
     val midLatestSpeed = new LatestSpeedListener(batchDuration)
     midSsc.addStreamingListener(midLatestSpeed)
@@ -145,7 +145,7 @@ class StreamingListenerSuite extends TestSuiteBase with Matchers {
 
     // between two batch sizes that are both below the system's limits,
     // the estimate of elements processed per batch should be comparable
-    val bigInput = (1 to 40).map(Seq(_)).toSeq
+    val bigInput = (1 to 400).map(Seq(_)).toSeq
     val bigSsc = setupStreams(bigInput, operation)
     val bigLatestSpeed = new LatestSpeedListener(batchDuration)
     bigSsc.addStreamingListener(bigLatestSpeed)
