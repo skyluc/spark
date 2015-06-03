@@ -68,7 +68,10 @@ class DropCongestionStrategy extends CongestionStrategy {
     val bound = latestBound.get()
     val difference = currentBuffer.size - bound
     if (bound > 0 && difference > 0) {
+      println(s"Dropping $difference elements. Bound: $bound")
       currentBuffer.reduceToSize(bound)
+    } else {
+      println(s"No drop. Bound: $bound")
     }
   }
 
