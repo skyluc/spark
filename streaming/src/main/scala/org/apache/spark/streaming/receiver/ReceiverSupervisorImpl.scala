@@ -114,6 +114,12 @@ private[streaming] class ReceiverSupervisorImpl(
       case "pushback" => new PushBackCongestionStrategy(blockGenerator)
       case "drop" => new DropCongestionStrategy()
       case "sampling" => new SamplingCongestionStrategy()
+      case "reactive" => receiver match {
+        case r: ReactiveReceiver[_] => r.reactiveCongestionStrategy
+        case _ => throw new SparkException(
+          "Cannot enable reactive congestion strategy on a Receiver that does not extend" +
+          " ReactiveReceiver. See documentation for more details.")
+      }
       case _ => new IgnoreCongestionStrategy()
     }.getOrElse {
      new IgnoreCongestionStrategy()
