@@ -30,7 +30,7 @@ import org.apache.spark.util.random.{RandomSampler, BernoulliSampler}
  */
 class IgnoreCongestionStrategy extends CongestionStrategy {
 
-  override def onBlockBoundUpdate(bound: Int) {}
+  override def onBlockBoundUpdate(bound: Int): Unit = {}
 
   override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
                                      nextBuffer: ArrayBuffer[Any]): Unit = {}
