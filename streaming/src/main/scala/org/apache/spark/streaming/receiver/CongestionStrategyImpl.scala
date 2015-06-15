@@ -20,6 +20,7 @@ package org.apache.spark.streaming.receiver
 import scala.collection.mutable.ArrayBuffer
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.Random
+import org.apache.spark.Logging
 import org.apache.spark.util.random.{RandomSampler, BernoulliSampler}
 
 /**
@@ -60,7 +61,7 @@ class PushBackCongestionStrategy(blockInterval: Long) extends CongestionStrategy
 
 }
 
-class DropCongestionStrategy extends CongestionStrategy {
+class DropCongestionStrategy extends CongestionStrategy with Logging {
 
   private val latestBound = new AtomicInteger(-1)
 
@@ -71,13 +72,15 @@ class DropCongestionStrategy extends CongestionStrategy {
     val bound = latestBound.get()
     val difference = currentBuffer.size - bound
     if (bound > 0 && difference > 0) {
+      val f = bound.toDouble / currentBuffer.size
       currentBuffer.reduceToSize(bound)
+      logDebug(f"Prepared block by dropping with ratio of $f%2.2f.")
     }
   }
 
 }
 
-class SamplingCongestionStrategy extends CongestionStrategy {
+class SamplingCongestionStrategy extends CongestionStrategy with Logging {
 
   private val rng = RandomSampler.newDefaultRNG
 
@@ -94,6 +97,8 @@ class SamplingCongestionStrategy extends CongestionStrategy {
 
       currentBuffer.clear()
       currentBuffer ++= sampled
+
+      logDebug(f"Prepared sampled block with ratio of $f%2.2f.")
     }
   }
 
