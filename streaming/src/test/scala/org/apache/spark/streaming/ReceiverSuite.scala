@@ -155,73 +155,22 @@ class ReceiverSuite extends TestSuiteBase with Timeouts with Serializable {
     assert(recordedData.toSet === generatedData.toSet)
   }
 
-  ignore("block generator throttling") {
-    val blockGeneratorListener = new FakeBlockGeneratorListener
-    val blockIntervalMs = 100
-    val maxRate = 1001
-    val conf = new SparkConf().set("spark.streaming.blockInterval", s"${blockIntervalMs}ms").
-      set("spark.streaming.receiver.maxRate", maxRate.toString)
-    val blockGenerator = new BlockGenerator(blockGeneratorListener, 1, conf)
-    val expectedBlocks = 20
-    val waitTime = expectedBlocks * blockIntervalMs
-    val expectedMessages = maxRate * waitTime / 1000
-    val expectedMessagesPerBlock = maxRate * blockIntervalMs / 1000
-    val generatedData = new ArrayBuffer[Int]
-
-    // Generate blocks
-    val startTime = System.currentTimeMillis()
-    blockGenerator.start()
-    var count = 0
-    while(System.currentTimeMillis - startTime < waitTime) {
-      blockGenerator.addData(count)
-      generatedData += count
-      count += 1
-    }
-    blockGenerator.stop()
-
-    val recordedBlocks = blockGeneratorListener.arrayBuffers
-    val recordedData = recordedBlocks.flatten
-    assert(blockGeneratorListener.arrayBuffers.size > 0, "No blocks received")
-    assert(recordedData.toSet === generatedData.toSet, "Received data not same")
-
-    // recordedData size should be close to the expected rate; use an error margin proportional to
-    // the value, so that rate changes don't cause a brittle test
-    val minExpectedMessages = expectedMessages - 0.05 * expectedMessages
-    val maxExpectedMessages = expectedMessages + 0.05 * expectedMessages
-    val numMessages = recordedData.size
-    assert(
-      numMessages >= minExpectedMessages && numMessages <= maxExpectedMessages,
-      s"#records received = $numMessages, not between $minExpectedMessages and $maxExpectedMessages"
-    )
-
-    // XXX Checking every block would require an even distribution of messages across blocks,
-    // which throttling code does not control. Therefore, test against the average.
-    val minExpectedMessagesPerBlock = expectedMessagesPerBlock - 0.05 * expectedMessagesPerBlock
-    val maxExpectedMessagesPerBlock = expectedMessagesPerBlock + 0.05 * expectedMessagesPerBlock
-    val receivedBlockSizes = recordedBlocks.map { _.size }.mkString(",")
-
-    // the first and last block may be incomplete, so we slice them out
-    val validBlocks = recordedBlocks.drop(1).dropRight(1)
-    val averageBlockSize = validBlocks.map(block => block.size).sum / validBlocks.size
-
-    assert(
-      averageBlockSize >= minExpectedMessagesPerBlock &&
-        averageBlockSize <= maxExpectedMessagesPerBlock,
-      s"# records in received blocks = [$receivedBlockSizes], not between " +
-        s"$minExpectedMessagesPerBlock and $maxExpectedMessagesPerBlock, on average"
-    )
-  }
-
   // helps test congestion strategies with a constant rate per Block
   // verifies the rate of messages produced by one of the congestion strategies
   def testBlockGeneratorCongestion(congestionStrategy: CongestionStrategy,
                                    blockIntervalMs: Int,
                                    maxRatePerBlock: Int,
                                    expectedBlocks: Int,
-                                   errorBound: Double = 0.05): Unit = {
+                                   errorBound: Double = 0.05,
+                                   testIdentity: Boolean = false, // test block data unchanged
+                                    // additional config
+                                   confSetting: SparkConf => SparkConf = (x) => x
+                                 ): Unit = {
     congestionStrategy.onBlockBoundUpdate(maxRatePerBlock)
     val blockGeneratorListener = new FakeBlockGeneratorListenerWithStrategy(congestionStrategy)
-    val conf = new SparkConf().set("spark.streaming.blockInterval", s"${blockIntervalMs}ms")
+    val conf = confSetting(
+      new SparkConf().set("spark.streaming.blockInterval", s"${blockIntervalMs}ms")
+    )
     val blockGenerator = new BlockGenerator(blockGeneratorListener, 1, conf)
 
     val waitTime = expectedBlocks * blockIntervalMs + blockIntervalMs / 2
@@ -278,6 +227,19 @@ class ReceiverSuite extends TestSuiteBase with Timeouts with Serializable {
       s"# records in received blocks = [$receivedBlockSizes], not between " +
         s"$minExpectedMessagesPerBlock and $maxExpectedMessagesPerBlock, on average"
     )
+  }
+
+  ignore("block generator throttling"){
+    val ignoreStrategy = new IgnoreCongestionStrategy()
+    val blockIntervalMs = 100
+    val maxRate = 1001
+    val confSetting = (conf: SparkConf) => conf.set("spark.streaming.receiver.maxRate",
+                                                    maxRate.toString)
+    val expectedBlocks = 20
+    testBlockGeneratorCongestion(ignoreStrategy,
+                                 blockIntervalMs,
+                                 maxRate * blockIntervalMs / 1000,
+                                 expectedBlocks, 0.05, true, confSetting)
   }
 
   test("block generator drop"){
