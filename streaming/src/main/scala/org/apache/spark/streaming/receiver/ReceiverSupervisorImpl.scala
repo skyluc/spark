@@ -110,7 +110,7 @@ private[streaming] class ReceiverSupervisorImpl(
 
     strategyNameOption.map {
       case "ignore" => new IgnoreCongestionStrategy()
-      case "pushback" => new PushBackCongestionStrategy(blockGenerator.blockIntervalMs)
+      case "pushback" => new PushBackCongestionStrategy(blockGenerator)
       case "drop" => new DropCongestionStrategy()
       case "sampling" => new SamplingCongestionStrategy()
       case _ => new IgnoreCongestionStrategy()

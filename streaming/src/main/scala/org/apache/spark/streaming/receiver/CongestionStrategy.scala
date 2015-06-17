@@ -42,3 +42,6 @@ trait CongestionStrategy {
   def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any], nextBuffer: ArrayBuffer[Any]): Unit
 
 }
+
+abstract class ThrottlingCongestionStrategy(private[receiver] val rateLimiter: RateLimiter)
+  extends CongestionStrategy

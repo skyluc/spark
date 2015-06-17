@@ -35,11 +35,15 @@ class IgnoreCongestionStrategy extends CongestionStrategy {
                                      nextBuffer: ArrayBuffer[Any]): Unit = {}
 }
 
-class PushBackCongestionStrategy(blockInterval: Long) extends CongestionStrategy {
+class PushBackCongestionStrategy(blockGenerator: BlockGenerator)
+  extends ThrottlingCongestionStrategy(blockGenerator) {
 
   private val latestBound = new AtomicInteger(-1)
 
-  override def onBlockBoundUpdate(bound: Int): Unit = latestBound.set(bound)
+  override def onBlockBoundUpdate(bound: Int): Unit = {
+    if (bound > 0) rateLimiter.updateRate(bound * 1000 / blockGenerator.blockIntervalMs.toInt)
+    latestBound.set(bound)
+  }
 
   override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
                                      nextBuffer: ArrayBuffer[Any]): Unit = {
@@ -49,13 +53,6 @@ class PushBackCongestionStrategy(blockInterval: Long) extends CongestionStrategy
       nextBuffer ++=: currentBuffer.takeRight(difference)
       currentBuffer.reduceToSize(bound)
     }
-    // We've had our fill for the amount of time it would take us to process the difference.
-    // Use the fact this is synchronized with data ingestion to prevent more data coming in.
-    // We need to wait for quite less than the block interval for the next 'clock tick'
-    // (and block generation) to occur normally : this only leaves 5% of the block interval
-    // during which data can 'sneak in'
-    val delay = math.round( blockInterval * math.min((difference.toFloat / bound), 0.9) )
-    Thread.sleep(delay)
   }
 
 }
