@@ -67,11 +67,10 @@ class DropCongestionStrategy extends CongestionStrategy with Logging {
   override def restrictCurrentBuffer(currentBuffer: ArrayBuffer[Any],
                                      nextBuffer: ArrayBuffer[Any]): Unit = {
     val bound = latestBound.get()
-    val difference = currentBuffer.size - bound
-    if (bound > 0 && difference > 0) {
+    val f = bound.toDouble / currentBuffer.size
+    if (f > 0 && f < 1){
       currentBuffer.reduceToSize(bound)
 
-      val f = bound.toDouble / currentBuffer.size
       logDebug(f"Prepared block by dropping with ratio of $f%2.2f.")
     }
   }
