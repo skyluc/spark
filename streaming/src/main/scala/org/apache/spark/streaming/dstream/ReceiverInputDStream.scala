@@ -42,7 +42,7 @@ import org.apache.spark.streaming.util.WriteAheadLogUtils
 abstract class ReceiverInputDStream[T: ClassTag](@transient ssc_ : StreamingContext)
   extends InputDStream[T](ssc_) {
 
-  override protected[streaming] def attachRateEstimator(rateEstimator: RateEstimator): Unit = {
+  override def attachRateEstimator(rateEstimator: RateEstimator): Unit = {
     if (ssc.scheduler.isStarted == false) {
       def publish(rate: Long): Unit = ssc.scheduler.receiverTracker.updateStreamRate(id, rate)
       rateController = Some(new RateController(id, rateEstimator, publish))

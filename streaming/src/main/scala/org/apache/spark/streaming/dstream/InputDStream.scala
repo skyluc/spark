@@ -55,7 +55,7 @@ abstract class InputDStream[T: ClassTag] (@transient ssc_ : StreamingContext)
    */
   private[streaming] var rateController: Option[RateController] = None
 
-  protected[streaming] def attachRateEstimator(rateEstimator: RateEstimator): Unit = {
+  def attachRateEstimator(rateEstimator: RateEstimator): Unit = {
     if (ssc.scheduler.isStarted == false) {
       rateController = Some(new RateController(id, rateEstimator))
     }
