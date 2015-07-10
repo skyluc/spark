@@ -79,7 +79,7 @@ private[streaming] class ReceiverSupervisorImpl(
           cleanupOldBlocks(threshTime)
         case RateLimitUpdate(eps) => {
           blockGenerator.updateRate(eps.toInt)
-          logDebug(s"Received update for $streamId : $elemsPerBlock")
+          logDebug(s"Received update for $streamId : $eps")
         }
       }
     })
