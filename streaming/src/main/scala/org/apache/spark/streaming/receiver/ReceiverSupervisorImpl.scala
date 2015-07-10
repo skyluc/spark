@@ -67,8 +67,8 @@ private[streaming] class ReceiverSupervisorImpl(
     strategyNameOption.map {
       case "ignore" => new IgnoreCongestionStrategy()
       case "pushback" => new PushBackCongestionStrategy(blockGenerator.blockIntervalMs)
-      case "drop" => new DropCongestionStrategy()
-      case "sampling" => new SamplingCongestionStrategy()
+      case "drop" => new DropCongestionStrategy(receiver.streamId)
+      case "sampling" => new SamplingCongestionStrategy(receiver.streamId)
       case "reactive" => receiver match {
         case r: ReactiveReceiver[_] => r.reactiveCongestionStrategy
         case _ => throw new SparkException(

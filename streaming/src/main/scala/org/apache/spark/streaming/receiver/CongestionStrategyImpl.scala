@@ -61,7 +61,7 @@ class PushBackCongestionStrategy(blockInterval: Long) extends CongestionStrategy
 
 }
 
-class DropCongestionStrategy extends CongestionStrategy with Logging {
+class DropCongestionStrategy(streamId: Int) extends CongestionStrategy with Logging {
 
   private val latestBound = new AtomicInteger(-1)
 
@@ -74,13 +74,13 @@ class DropCongestionStrategy extends CongestionStrategy with Logging {
     if (bound > 0 && difference > 0) {
       val f = bound.toDouble / currentBuffer.size
       currentBuffer.reduceToSize(bound)
-      logDebug(f"Prepared block by dropping with ratio of $f%2.2f.")
+      logDebug(f"Prepared block for stream $streamId by dropping with ratio of $f%2.2f.")
     }
   }
 
 }
 
-class SamplingCongestionStrategy extends CongestionStrategy with Logging {
+class SamplingCongestionStrategy(streamId: Int) extends CongestionStrategy with Logging {
 
   private val rng = RandomSampler.newDefaultRNG
 
@@ -98,7 +98,7 @@ class SamplingCongestionStrategy extends CongestionStrategy with Logging {
       currentBuffer.clear()
       currentBuffer ++= sampled
 
-      logDebug(f"Prepared sampled block with ratio of $f%2.2f.")
+      logDebug(f"Prepared sampled block for stream $streamId with ratio of $f%2.2f.")
     }
   }
 

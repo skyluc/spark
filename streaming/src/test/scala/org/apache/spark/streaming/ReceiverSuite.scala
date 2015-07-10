@@ -275,12 +275,12 @@ class ReceiverSuite extends TestSuiteBase with Timeouts with Serializable {
   }
 
   ignore("block generator drop"){
-    val dropStrategy = new DropCongestionStrategy()
+    val dropStrategy = new DropCongestionStrategy(1)
     testBlockGeneratorCongestion(dropStrategy, 100, 1001, 20)
   }
 
   ignore("block generator sampling"){
-    val samplingStrategy = new SamplingCongestionStrategy()
+    val samplingStrategy = new SamplingCongestionStrategy(1)
     testBlockGeneratorCongestion(samplingStrategy, 100, 1001, 20, 0.07)
   }
 
