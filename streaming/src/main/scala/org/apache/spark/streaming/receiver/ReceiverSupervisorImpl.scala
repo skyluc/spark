@@ -78,7 +78,11 @@ private[streaming] class ReceiverSupervisorImpl(
           logDebug("Received delete old batch signal")
           cleanupOldBlocks(threshTime)
         case RateLimitUpdate(eps) => {
-          blockGenerator.updateRate(eps.toInt)
+          if (receiver.useRateLimiterInReceiver) {
+            receiver.updateRateLimit(eps)
+          } else {
+            blockGenerator.updateRate(eps.toInt)
+          }
           logDebug(s"Received update for $streamId : $eps")
         }
       }
