@@ -107,6 +107,10 @@ abstract class Receiver[T](val storageLevel: StorageLevel) extends Serializable 
    */
   def onStop()
 
+  def useRateLimiterInReceiver : Boolean = false
+
+  def updateRateLimit(limit: Long): Unit = {}
+
   /** Override this to specify a preferred location (hostname). */
   def preferredLocation : Option[String] = None
 
