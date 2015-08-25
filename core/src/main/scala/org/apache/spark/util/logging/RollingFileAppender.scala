@@ -78,33 +78,31 @@ private[spark] class RollingFileAppender(
   private def moveFile() {
     val rolloverSuffix = rollingPolicy.generateRolledOverFileSuffix()
     val rolloverFile = new File(
-      activeFile.getParentFile, activeFile.getName + rolloverSuffix).getAbsoluteFile
-    try {
-      logDebug(s"Attempting to rollover file $activeFile to file $rolloverFile")
-      if (activeFile.exists) {
-        if (!rolloverFile.exists) {
-          Files.move(activeFile, rolloverFile)
-          logInfo(s"Rolled over $activeFile to $rolloverFile")
-        } else {
-          // In case the rollover file name clashes, make a unique file name.
-          // The resultant file names are long and ugly, so this is used only
-          // if there is a name collision. This can be avoided by the using
-          // the right pattern such that name collisions do not occur.
-          var i = 0
-          var altRolloverFile: File = null
-          do {
-            altRolloverFile = new File(activeFile.getParent,
-              s"${activeFile.getName}$rolloverSuffix--$i").getAbsoluteFile
-            i += 1
-          } while (i < 10000 && altRolloverFile.exists)
-
-          logWarning(s"Rollover file $rolloverFile already exists, " +
-            s"rolled over $activeFile to file $altRolloverFile")
-          Files.move(activeFile, altRolloverFile)
-        }
+    activeFile.getParentFile, activeFile.getName + rolloverSuffix).getAbsoluteFile
+    logDebug(s"Attempting to rollover file $activeFile to file $rolloverFile")
+    if (activeFile.exists) {
+      if (!rolloverFile.exists) {
+        Files.move(activeFile, rolloverFile)
+        logInfo(s"Rolled over $activeFile to $rolloverFile")
       } else {
-        logWarning(s"File $activeFile does not exist")
+        // In case the rollover file name clashes, make a unique file name.
+        // The resultant file names are long and ugly, so this is used only
+        // if there is a name collision. This can be avoided by the using
+        // the right pattern such that name collisions do not occur.
+        var i = 0
+        var altRolloverFile: File = null
+        do {
+          altRolloverFile = new File(activeFile.getParent,
+            s"${activeFile.getName}$rolloverSuffix--$i").getAbsoluteFile
+          i += 1
+        } while (i < 10000 && altRolloverFile.exists)
+
+        logWarning(s"Rollover file $rolloverFile already exists, " +
+          s"rolled over $activeFile to file $altRolloverFile")
+        Files.move(activeFile, altRolloverFile)
       }
+    } else {
+      logWarning(s"File $activeFile does not exist")
     }
   }
 
