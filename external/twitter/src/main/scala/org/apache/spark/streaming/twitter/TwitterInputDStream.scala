@@ -17,6 +17,8 @@
 
 package org.apache.spark.streaming.twitter
 
+import scala.annotation.meta._
+
 import twitter4j._
 import twitter4j.auth.Authorization
 import twitter4j.conf.ConfigurationBuilder
@@ -39,7 +41,7 @@ import org.apache.spark.streaming.receiver.Receiver
 */
 private[streaming]
 class TwitterInputDStream(
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     twitterAuth: Option[Authorization],
     filters: Seq[String],
     storageLevel: StorageLevel

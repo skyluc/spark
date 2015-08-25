@@ -18,6 +18,7 @@
 package org.apache.spark.rdd
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.Partition
 
@@ -36,7 +37,7 @@ private[spark] object CheckpointState extends Enumeration {
  * as well as, manages the post-checkpoint state by providing the updated partitions,
  * iterator and preferred locations of the checkpointed RDD.
  */
-private[spark] abstract class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
+private[spark] abstract class RDDCheckpointData[T: ClassTag](@(transient @param @field) rdd: RDD[T])
   extends Serializable {
 
   import CheckpointState._

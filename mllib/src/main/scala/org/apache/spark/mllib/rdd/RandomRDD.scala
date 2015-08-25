@@ -24,6 +24,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.util.Utils
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 import scala.util.Random
 
 private[mllib] class RandomRDDPartition[T](override val index: Int,
@@ -35,11 +36,11 @@ private[mllib] class RandomRDDPartition[T](override val index: Int,
 }
 
 // These two classes are necessary since Range objects in Scala cannot have size > Int.MaxValue
-private[mllib] class RandomRDD[T: ClassTag](@transient sc: SparkContext,
+private[mllib] class RandomRDD[T: ClassTag](@(transient @param @field) sc: SparkContext,
     size: Long,
     numPartitions: Int,
-    @transient rng: RandomDataGenerator[T],
-    @transient seed: Long = Utils.random.nextLong) extends RDD[T](sc, Nil) {
+    @(transient @param @field) rng: RandomDataGenerator[T],
+    @(transient @param @field) seed: Long = Utils.random.nextLong) extends RDD[T](sc, Nil) {
 
   require(size > 0, "Positive RDD size required.")
   require(numPartitions > 0, "Positive number of partitions required")
@@ -56,12 +57,12 @@ private[mllib] class RandomRDD[T: ClassTag](@transient sc: SparkContext,
   }
 }
 
-private[mllib] class RandomVectorRDD(@transient sc: SparkContext,
+private[mllib] class RandomVectorRDD(@(transient @param @field) sc: SparkContext,
     size: Long,
     vectorSize: Int,
     numPartitions: Int,
-    @transient rng: RandomDataGenerator[Double],
-    @transient seed: Long = Utils.random.nextLong) extends RDD[Vector](sc, Nil) {
+    @(transient @param @field) rng: RandomDataGenerator[Double],
+    @(transient @param @field) seed: Long = Utils.random.nextLong) extends RDD[Vector](sc, Nil) {
 
   require(size > 0, "Positive RDD size required.")
   require(numPartitions > 0, "Positive number of partitions required")

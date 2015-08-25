@@ -17,6 +17,8 @@
 
 package org.apache.spark
 
+import scala.annotation.meta._
+
 import java.io.IOException
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -37,7 +39,7 @@ import org.apache.spark.util.SerializableJobConf
  * a filename to write to, etc, exactly like in a Hadoop MapReduce job.
  */
 private[spark]
-class SparkHadoopWriter(@transient jobConf: JobConf)
+class SparkHadoopWriter(@(transient @param @field) jobConf: JobConf)
   extends Logging
   with SparkHadoopMapRedUtil
   with Serializable {

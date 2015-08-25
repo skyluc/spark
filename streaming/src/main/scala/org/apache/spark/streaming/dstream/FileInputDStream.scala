@@ -21,6 +21,7 @@ import java.io.{IOException, ObjectInputStream}
 
 import scala.collection.mutable
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path, PathFilter}
@@ -70,7 +71,7 @@ import org.apache.spark.util.{SerializableConfiguration, TimeStampedHashMap, Uti
  */
 private[streaming]
 class FileInputDStream[K, V, F <: NewInputFormat[K, V]](
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     directory: String,
     filter: Path => Boolean = FileInputDStream.defaultFilter,
     newFilesOnly: Boolean = true,

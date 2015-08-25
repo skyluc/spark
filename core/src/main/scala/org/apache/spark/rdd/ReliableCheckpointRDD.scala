@@ -20,6 +20,7 @@ package org.apache.spark.rdd
 import java.io.IOException
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.hadoop.fs.Path
 
@@ -32,7 +33,7 @@ import org.apache.spark.util.{SerializableConfiguration, Utils}
  * An RDD that reads from checkpoint files previously written to reliable storage.
  */
 private[spark] class ReliableCheckpointRDD[T: ClassTag](
-    @transient sc: SparkContext,
+    @(transient @param @field) sc: SparkContext,
     val checkpointPath: String)
   extends CheckpointRDD[T](sc) {
 

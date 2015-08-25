@@ -24,6 +24,7 @@ import org.apache.spark.storage.StorageLevel
 import org.apache.spark.util.NextIterator
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import java.io._
 import java.net.{UnknownHostException, Socket}
@@ -32,7 +33,7 @@ import org.apache.spark.streaming.receiver.Receiver
 
 private[streaming]
 class SocketInputDStream[T: ClassTag](
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     host: String,
     port: Int,
     bytesToObjects: InputStream => Iterator[T],

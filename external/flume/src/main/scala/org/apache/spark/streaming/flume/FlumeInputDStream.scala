@@ -24,6 +24,7 @@ import java.util.concurrent.Executors
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.flume.source.avro.AvroSourceProtocol
 import org.apache.flume.source.avro.AvroFlumeEvent
@@ -43,7 +44,7 @@ import org.jboss.netty.handler.codec.compression._
 
 private[streaming]
 class FlumeInputDStream[T: ClassTag](
-  @transient ssc_ : StreamingContext,
+  @(transient @param @field) ssc_ : StreamingContext,
   host: String,
   port: Int,
   storageLevel: StorageLevel,

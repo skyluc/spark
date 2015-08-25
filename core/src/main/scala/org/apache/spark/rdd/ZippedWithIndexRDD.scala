@@ -18,6 +18,7 @@
 package org.apache.spark.rdd
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.{Partition, TaskContext}
 import org.apache.spark.util.Utils
@@ -37,7 +38,7 @@ class ZippedWithIndexRDDPartition(val prev: Partition, val startIndex: Long)
  * @tparam T parent RDD item type
  */
 private[spark]
-class ZippedWithIndexRDD[T: ClassTag](@transient prev: RDD[T]) extends RDD[(T, Long)](prev) {
+class ZippedWithIndexRDD[T: ClassTag](@(transient @param @field) prev: RDD[T]) extends RDD[(T, Long)](prev) {
 
   /** The start index of each partition. */
   @transient private val startIndices: Array[Long] = {

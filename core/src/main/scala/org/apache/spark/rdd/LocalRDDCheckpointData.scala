@@ -18,6 +18,7 @@
 package org.apache.spark.rdd
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.{Logging, SparkEnv, SparkException, TaskContext}
 import org.apache.spark.storage.{RDDBlockId, StorageLevel}
@@ -31,7 +32,7 @@ import org.apache.spark.util.Utils
  * is written to the local, ephemeral block storage that lives in each executor. This is useful
  * for use cases where RDDs build up long lineages that need to be truncated often (e.g. GraphX).
  */
-private[spark] class LocalRDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
+private[spark] class LocalRDDCheckpointData[T: ClassTag](@(transient @param @field) rdd: RDD[T])
   extends RDDCheckpointData[T](rdd) with Logging {
 
   /**

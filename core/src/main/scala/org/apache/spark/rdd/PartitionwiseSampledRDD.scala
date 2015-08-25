@@ -20,6 +20,7 @@ package org.apache.spark.rdd
 import java.util.Random
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.{Partition, TaskContext}
 import org.apache.spark.util.random.RandomSampler
@@ -47,8 +48,8 @@ class PartitionwiseSampledRDDPartition(val prev: Partition, val seed: Long)
 private[spark] class PartitionwiseSampledRDD[T: ClassTag, U: ClassTag](
     prev: RDD[T],
     sampler: RandomSampler[T, U],
-    @transient preservesPartitioning: Boolean,
-    @transient seed: Long = Utils.random.nextLong)
+    @(transient @param @field) preservesPartitioning: Boolean,
+    @(transient @param @field) seed: Long = Utils.random.nextLong)
   extends RDD[U](prev) {
 
   @transient override val partitioner = if (preservesPartitioning) prev.partitioner else None

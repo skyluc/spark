@@ -17,6 +17,8 @@
 
 package org.apache.spark.streaming.mqtt
 
+import scala.annotation.meta._
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttClient
@@ -38,7 +40,7 @@ import org.apache.spark.streaming.receiver.Receiver
 
 private[streaming]
 class MQTTInputDStream(
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     brokerUrl: String,
     topic: String,
     storageLevel: StorageLevel

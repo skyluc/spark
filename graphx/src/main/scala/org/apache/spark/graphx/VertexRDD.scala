@@ -18,6 +18,7 @@
 package org.apache.spark.graphx
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.SparkContext._
@@ -55,8 +56,8 @@ import org.apache.spark.graphx.impl.VertexRDDImpl
  * @tparam VD the vertex attribute associated with each vertex in the set.
  */
 abstract class VertexRDD[VD](
-    @transient sc: SparkContext,
-    @transient deps: Seq[Dependency[_]]) extends RDD[(VertexId, VD)](sc, deps) {
+    @(transient @param @field) sc: SparkContext,
+    @(transient @param @field) deps: Seq[Dependency[_]]) extends RDD[(VertexId, VD)](sc, deps) {
 
   implicit protected def vdTag: ClassTag[VD]
 

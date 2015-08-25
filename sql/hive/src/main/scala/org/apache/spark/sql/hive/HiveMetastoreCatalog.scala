@@ -19,6 +19,7 @@ package org.apache.spark.sql.hive
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.annotation.meta._
 
 import com.google.common.base.Objects
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
@@ -767,7 +768,7 @@ private[hive] case class InsertIntoHiveTable(
 private[hive] case class MetastoreRelation
     (databaseName: String, tableName: String, alias: Option[String])
     (val table: HiveTable)
-    (@transient sqlContext: SQLContext)
+    (@(transient @param @field) sqlContext: SQLContext)
   extends LeafNode with MultiInstanceRelation with FileRelation {
 
   override def equals(other: Any): Boolean = other match {

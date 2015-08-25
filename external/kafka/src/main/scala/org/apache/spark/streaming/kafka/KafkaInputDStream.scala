@@ -21,6 +21,7 @@ import java.util.Properties
 
 import scala.collection.Map
 import scala.reflect.{classTag, ClassTag}
+import scala.annotation.meta._
 
 import kafka.consumer.{KafkaStream, Consumer, ConsumerConfig, ConsumerConnector}
 import kafka.serializer.Decoder
@@ -48,7 +49,7 @@ class KafkaInputDStream[
   V: ClassTag,
   U <: Decoder[_]: ClassTag,
   T <: Decoder[_]: ClassTag](
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     kafkaParams: Map[String, String],
     topics: Map[String, Int],
     useReliableReceiver: Boolean,

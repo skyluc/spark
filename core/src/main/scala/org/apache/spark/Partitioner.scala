@@ -22,6 +22,7 @@ import java.io.{IOException, ObjectInputStream, ObjectOutputStream}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.{ClassTag, classTag}
+import scala.annotation.meta._
 import scala.util.hashing.byteswap32
 
 import org.apache.spark.rdd.{PartitionPruningRDD, RDD}
@@ -104,8 +105,8 @@ class HashPartitioner(partitions: Int) extends Partitioner {
  * the value of `partitions`.
  */
 class RangePartitioner[K : Ordering : ClassTag, V](
-    @transient partitions: Int,
-    @transient rdd: RDD[_ <: Product2[K, V]],
+    @(transient @param @field) partitions: Int,
+    @(transient @param @field) rdd: RDD[_ <: Product2[K, V]],
     private var ascending: Boolean = true)
   extends Partitioner {
 

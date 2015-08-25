@@ -23,6 +23,7 @@ import javax.annotation.Nullable
 
 import scala.collection.JavaConverters._
 import scala.util.control.NonFatal
+import scala.annotation.meta._
 
 import org.apache.hadoop.hive.serde.serdeConstants
 import org.apache.hadoop.hive.serde2.AbstractSerDe
@@ -53,7 +54,7 @@ case class ScriptTransformation(
     script: String,
     output: Seq[Attribute],
     child: SparkPlan,
-    ioschema: HiveScriptIOSchema)(@transient sc: HiveContext)
+    ioschema: HiveScriptIOSchema)(@(transient @param @field) sc: HiveContext)
   extends UnaryNode {
 
   override def otherCopyArgs: Seq[HiveContext] = sc :: Nil

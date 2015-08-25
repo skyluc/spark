@@ -18,6 +18,7 @@
 package org.apache.spark.streaming.dstream
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.rdd.{BlockRDD, RDD}
 import org.apache.spark.storage.BlockId
@@ -38,7 +39,7 @@ import org.apache.spark.streaming.{StreamingContext, Time}
  * @param ssc_ Streaming context that will execute this input stream
  * @tparam T Class type of the object of this stream
  */
-abstract class ReceiverInputDStream[T: ClassTag](@transient ssc_ : StreamingContext)
+abstract class ReceiverInputDStream[T: ClassTag](@(transient @param @field) ssc_ : StreamingContext)
   extends InputDStream[T](ssc_) {
 
   /**

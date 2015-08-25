@@ -20,6 +20,7 @@ package org.apache.spark.rdd
 import java.io.{IOException, ObjectOutputStream}
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.util.Utils
@@ -27,8 +28,8 @@ import org.apache.spark.util.Utils
 private[spark]
 class CartesianPartition(
     idx: Int,
-    @transient rdd1: RDD[_],
-    @transient rdd2: RDD[_],
+    @(transient @field @param) rdd1: RDD[_],
+    @(transient @field @param) rdd2: RDD[_],
     s1Index: Int,
     s2Index: Int
   ) extends Partition {

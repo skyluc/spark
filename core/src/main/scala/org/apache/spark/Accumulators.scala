@@ -24,6 +24,7 @@ import scala.collection.Map
 import scala.collection.mutable
 import scala.ref.WeakReference
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.serializer.JavaSerializer
 import org.apache.spark.util.Utils
@@ -47,7 +48,7 @@ import org.apache.spark.util.Utils
  * @tparam T partial data that can be added in
  */
 class Accumulable[R, T] private[spark] (
-    @transient initialValue: R,
+    @(transient @param @field) initialValue: R,
     param: AccumulableParam[R, T],
     val name: Option[String],
     internal: Boolean)

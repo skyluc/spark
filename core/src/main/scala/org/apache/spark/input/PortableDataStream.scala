@@ -20,6 +20,7 @@ package org.apache.spark.input
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 
 import scala.collection.JavaConverters._
+import scala.annotation.meta._
 
 import com.google.common.io.ByteStreams
 import org.apache.hadoop.conf.Configuration
@@ -131,8 +132,8 @@ private[spark] class StreamInputFormat extends StreamFileInputFormat[PortableDat
  */
 @Experimental
 class PortableDataStream(
-    @transient isplit: CombineFileSplit,
-    @transient context: TaskAttemptContext,
+    @(transient @param @field) isplit: CombineFileSplit,
+    @(transient @param @field) context: TaskAttemptContext,
     index: Integer)
   extends Serializable {
 

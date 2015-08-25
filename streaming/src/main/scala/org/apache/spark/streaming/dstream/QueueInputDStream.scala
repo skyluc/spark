@@ -21,13 +21,14 @@ import java.io.{NotSerializableException, ObjectOutputStream}
 
 import scala.collection.mutable.{ArrayBuffer, Queue}
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.rdd.{RDD, UnionRDD}
 import org.apache.spark.streaming.{Time, StreamingContext}
 
 private[streaming]
 class QueueInputDStream[T: ClassTag](
-    @transient ssc: StreamingContext,
+    @(transient @param @field) ssc: StreamingContext,
     val queue: Queue[RDD[T]],
     oneAtATime: Boolean,
     defaultRDD: RDD[T]

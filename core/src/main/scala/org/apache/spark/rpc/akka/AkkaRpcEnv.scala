@@ -23,6 +23,7 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
+import scala.annotation.meta._
 
 import akka.actor.{ActorSystem, ExtendedActorSystem, Actor, ActorRef, Props, Address}
 import akka.event.Logging.Error
@@ -272,10 +273,10 @@ private[akka] class ErrorMonitor extends Actor with ActorLogReceive with Logging
 }
 
 private[akka] class AkkaRpcEndpointRef(
-    @transient defaultAddress: RpcAddress,
-    @transient _actorRef: => ActorRef,
-    @transient conf: SparkConf,
-    @transient initInConstructor: Boolean = true)
+    @(transient @param @field) defaultAddress: RpcAddress,
+    @(transient @param @field) _actorRef: => ActorRef,
+    @(transient @param @field) conf: SparkConf,
+    @(transient @param @field) initInConstructor: Boolean = true)
   extends RpcEndpointRef(conf) with Logging {
 
   lazy val actorRef = _actorRef

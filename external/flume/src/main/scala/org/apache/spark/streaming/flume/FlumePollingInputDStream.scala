@@ -22,6 +22,7 @@ import java.util.concurrent.{LinkedBlockingQueue, Executors}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.apache.avro.ipc.NettyTransceiver
@@ -46,7 +47,7 @@ import org.apache.spark.streaming.flume.sink._
  * @tparam T Class type of the object of this stream
  */
 private[streaming] class FlumePollingInputDStream[T: ClassTag](
-    @transient _ssc: StreamingContext,
+    @(transient  @param @field) _ssc: StreamingContext,
     val addresses: Seq[InetSocketAddress],
     val maxBatchSize: Int,
     val parallelism: Int,

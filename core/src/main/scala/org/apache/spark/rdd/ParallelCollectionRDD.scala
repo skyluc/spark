@@ -24,6 +24,7 @@ import scala.collection.Map
 import scala.collection.immutable.NumericRange
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.serializer.JavaSerializer
@@ -83,8 +84,8 @@ private[spark] class ParallelCollectionPartition[T: ClassTag](
 }
 
 private[spark] class ParallelCollectionRDD[T: ClassTag](
-    @transient sc: SparkContext,
-    @transient data: Seq[T],
+    @(transient @param @field) sc: SparkContext,
+    @(transient @param @field) data: Seq[T],
     numSlices: Int,
     locationPrefs: Map[Int, Seq[String]])
     extends RDD[T](sc, Nil) {

@@ -20,13 +20,14 @@ package org.apache.spark.rdd
 import java.io.{IOException, ObjectOutputStream}
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.{OneToOneDependency, Partition, SparkContext, TaskContext}
 import org.apache.spark.util.Utils
 
 private[spark] class ZippedPartitionsPartition(
     idx: Int,
-    @transient rdds: Seq[RDD[_]],
+    @(transient @param @field)  rdds: Seq[RDD[_]],
     @transient val preferredLocations: Seq[String])
   extends Partition {
 

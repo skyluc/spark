@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.hadoop.conf.{Configurable, Configuration}
 import org.apache.hadoop.io.Writable
@@ -40,7 +41,7 @@ import org.apache.spark.storage.StorageLevel
 private[spark] class NewHadoopPartition(
     rddId: Int,
     val index: Int,
-    @transient rawSplit: InputSplit with Writable)
+    @(transient @param @field) rawSplit: InputSplit with Writable)
   extends Partition {
 
   val serializableHadoopSplit = new SerializableWritable(rawSplit)
@@ -68,7 +69,7 @@ class NewHadoopRDD[K, V](
     inputFormatClass: Class[_ <: InputFormat[K, V]],
     keyClass: Class[K],
     valueClass: Class[V],
-    @transient conf: Configuration)
+    @(transient @param @field) conf: Configuration)
   extends RDD[(K, V)](sc, Nil)
   with SparkHadoopMapReduceUtil
   with Logging {
@@ -262,7 +263,7 @@ private[spark] class WholeTextFileRDD(
     inputFormatClass: Class[_ <: WholeTextFileInputFormat],
     keyClass: Class[String],
     valueClass: Class[String],
-    @transient conf: Configuration,
+    @(transient @param @field) conf: Configuration,
     minPartitions: Int)
   extends NewHadoopRDD[String, String](sc, inputFormatClass, keyClass, valueClass, conf) {
 

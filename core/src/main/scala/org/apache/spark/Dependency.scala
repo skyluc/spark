@@ -17,6 +17,8 @@
 
 package org.apache.spark
 
+import scala.annotation.meta._
+
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.Serializer
@@ -66,7 +68,7 @@ abstract class NarrowDependency[T](_rdd: RDD[T]) extends Dependency[T] {
  */
 @DeveloperApi
 class ShuffleDependency[K, V, C](
-    @transient _rdd: RDD[_ <: Product2[K, V]],
+    @(transient @param @field) _rdd: RDD[_ <: Product2[K, V]],
     val partitioner: Partitioner,
     val serializer: Option[Serializer] = None,
     val keyOrdering: Option[Ordering[K]] = None,

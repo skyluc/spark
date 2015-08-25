@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.hadoop.conf.{Configurable, Configuration}
 import org.apache.hadoop.io.Writable
@@ -39,7 +40,7 @@ import org.apache.spark.util.{SerializableConfiguration, ShutdownHookManager, Ut
 private[spark] class SqlNewHadoopPartition(
     rddId: Int,
     val index: Int,
-    @transient rawSplit: InputSplit with Writable)
+    @(transient @param @field) rawSplit: InputSplit with Writable)
   extends SparkPartition {
 
   val serializableHadoopSplit = new SerializableWritable(rawSplit)
@@ -61,9 +62,9 @@ private[spark] class SqlNewHadoopPartition(
  * changes based on [[org.apache.spark.rdd.HadoopRDD]].
  */
 private[spark] class SqlNewHadoopRDD[V: ClassTag](
-    @transient sc : SparkContext,
+    @(transient @param @field) sc : SparkContext,
     broadcastedConf: Broadcast[SerializableConfiguration],
-    @transient initDriverSideJobFuncOpt: Option[Job => Unit],
+    @(transient @param @field) initDriverSideJobFuncOpt: Option[Job => Unit],
     initLocalJobFuncOpt: Option[Job => Unit],
     inputFormatClass: Class[_ <: InputFormat[Void, V]],
     valueClass: Class[V])

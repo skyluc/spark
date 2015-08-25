@@ -21,6 +21,7 @@ import java.text.NumberFormat
 import java.util.Date
 
 import scala.collection.mutable
+import scala.annotation.meta._
 
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars
@@ -45,7 +46,7 @@ import org.apache.spark.util.SerializableJobConf
  * It is based on [[SparkHadoopWriter]].
  */
 private[hive] class SparkHiveWriterContainer(
-    @transient jobConf: JobConf,
+    @(transient @param @field) jobConf: JobConf,
     fileSinkConf: FileSinkDesc)
   extends Logging
   with SparkHadoopMapRedUtil
@@ -163,7 +164,7 @@ private[spark] object SparkHiveDynamicPartitionWriterContainer {
 }
 
 private[spark] class SparkHiveDynamicPartitionWriterContainer(
-    @transient jobConf: JobConf,
+    @(transient @param @field) jobConf: JobConf,
     fileSinkConf: FileSinkDesc,
     dynamicPartColNames: Array[String])
   extends SparkHiveWriterContainer(jobConf, fileSinkConf) {

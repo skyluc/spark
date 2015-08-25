@@ -22,6 +22,7 @@ import java.util.UUID
 
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
+import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.rdd.BlockRDD
@@ -73,10 +74,10 @@ class WriteAheadLogBackedBlockRDDPartition(
  */
 private[streaming]
 class WriteAheadLogBackedBlockRDD[T: ClassTag](
-    @transient sc: SparkContext,
-    @transient blockIds: Array[BlockId],
+    @(transient @param @field) sc: SparkContext,
+    @(transient @param @field) blockIds: Array[BlockId],
     @transient val walRecordHandles: Array[WriteAheadLogRecordHandle],
-    @transient isBlockIdValid: Array[Boolean] = Array.empty,
+    @(transient @param @field) isBlockIdValid: Array[Boolean] = Array.empty,
     storeInBlockManager: Boolean = false,
     storageLevel: StorageLevel = StorageLevel.MEMORY_ONLY_SER)
   extends BlockRDD[T](sc, blockIds) {

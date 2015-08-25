@@ -17,6 +17,8 @@
 
 package org.apache.spark.sql.hive
 
+import scala.annotation.meta._
+
 import org.apache.hadoop.fs.{Path, PathFilter}
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.hadoop.hive.metastore.api.hive_metastoreConstants._
@@ -54,10 +56,10 @@ private[hive] sealed trait TableReader {
  */
 private[hive]
 class HadoopTableReader(
-    @transient attributes: Seq[Attribute],
-    @transient relation: MetastoreRelation,
-    @transient sc: HiveContext,
-    @transient hiveExtraConf: HiveConf)
+    @(transient @param @field) attributes: Seq[Attribute],
+    @(transient @param @field) relation: MetastoreRelation,
+    @(transient @param @field) sc: HiveContext,
+    @(transient @param @field) hiveExtraConf: HiveConf)
   extends TableReader with Logging {
 
   // Hadoop honors "mapred.map.tasks" as hint, but will ignore when mapred.job.tracker is "local".

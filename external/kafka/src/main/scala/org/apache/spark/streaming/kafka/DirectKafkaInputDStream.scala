@@ -20,6 +20,7 @@ package org.apache.spark.streaming.kafka
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import kafka.common.TopicAndPartition
 import kafka.message.MessageAndMetadata
@@ -58,7 +59,7 @@ class DirectKafkaInputDStream[
   U <: Decoder[K]: ClassTag,
   T <: Decoder[V]: ClassTag,
   R: ClassTag](
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     val kafkaParams: Map[String, String],
     val fromOffsets: Map[TopicAndPartition, Long],
     messageHandler: MessageAndMetadata[K, V] => R
@@ -79,7 +80,7 @@ class DirectKafkaInputDStream[
   override protected[streaming] val rateController: Option[RateController] = {
     if (RateController.isBackPressureEnabled(ssc.conf)) {
       Some(new DirectKafkaRateController(id,
-        RateEstimator.create(ssc.conf, ssc_.graph.batchDuration)))
+        RateEstimator.create(ssc.conf, context.graph.batchDuration)))
     } else {
       None
     }

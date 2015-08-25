@@ -22,6 +22,7 @@ import org.apache.spark.storage.{StorageLevel, StreamBlockId}
 import org.apache.spark.streaming.StreamingContext
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
@@ -39,7 +40,7 @@ import org.apache.spark.streaming.receiver.Receiver
  */
 private[streaming]
 class RawInputDStream[T: ClassTag](
-    @transient ssc_ : StreamingContext,
+    @(transient @param @field) ssc_ : StreamingContext,
     host: String,
     port: Int,
     storageLevel: StorageLevel

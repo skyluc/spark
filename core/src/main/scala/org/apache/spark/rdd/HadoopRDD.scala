@@ -24,6 +24,7 @@ import java.io.EOFException
 import scala.collection.immutable.Map
 import scala.reflect.ClassTag
 import scala.collection.mutable.ListBuffer
+import scala.annotation.meta._
 
 import org.apache.hadoop.conf.{Configurable, Configuration}
 import org.apache.hadoop.mapred.FileSplit
@@ -51,7 +52,7 @@ import org.apache.spark.storage.StorageLevel
 /**
  * A Spark split class that wraps around a Hadoop InputSplit.
  */
-private[spark] class HadoopPartition(rddId: Int, idx: Int, @transient s: InputSplit)
+private[spark] class HadoopPartition(rddId: Int, idx: Int, @(transient @param @field) s: InputSplit)
   extends Partition {
 
   val inputSplit = new SerializableWritable[InputSplit](s)
@@ -99,7 +100,7 @@ private[spark] class HadoopPartition(rddId: Int, idx: Int, @transient s: InputSp
  */
 @DeveloperApi
 class HadoopRDD[K, V](
-    @transient sc: SparkContext,
+    @(transient @param @field) sc: SparkContext,
     broadcastedConf: Broadcast[SerializableConfiguration],
     initLocalJobConfFuncOpt: Option[JobConf => Unit],
     inputFormatClass: Class[_ <: InputFormat[K, V]],
@@ -109,7 +110,7 @@ class HadoopRDD[K, V](
   extends RDD[(K, V)](sc, Nil) with Logging {
 
   if (initLocalJobConfFuncOpt.isDefined) {
-    sc.clean(initLocalJobConfFuncOpt.get)
+    sparkContext.clean(initLocalJobConfFuncOpt.get)
   }
 
   def this(
@@ -137,7 +138,7 @@ class HadoopRDD[K, V](
   // used to build JobTracker ID
   private val createTime = new Date()
 
-  private val shouldCloneJobConf = sc.conf.getBoolean("spark.hadoop.cloneConf", false)
+  private val shouldCloneJobConf = sparkContext.conf.getBoolean("spark.hadoop.cloneConf", false)
 
   // Returns a JobConf that will be used on slaves to obtain input splits for Hadoop reads.
   protected def getJobConf(): JobConf = {

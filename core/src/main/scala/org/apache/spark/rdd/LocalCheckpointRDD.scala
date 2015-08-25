@@ -18,6 +18,7 @@
 package org.apache.spark.rdd
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.{Partition, SparkContext, SparkEnv, SparkException, TaskContext}
 import org.apache.spark.storage.RDDBlockId
@@ -35,7 +36,7 @@ import org.apache.spark.storage.RDDBlockId
  * @param numPartitions the number of partitions in the checkpointed RDD
  */
 private[spark] class LocalCheckpointRDD[T: ClassTag](
-    @transient sc: SparkContext,
+    @(transient @param @field) sc: SparkContext,
     rddId: Int,
     numPartitions: Int)
   extends CheckpointRDD[T](sc) {

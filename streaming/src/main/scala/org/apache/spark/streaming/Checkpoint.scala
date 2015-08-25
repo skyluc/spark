@@ -17,6 +17,8 @@
 
 package org.apache.spark.streaming
 
+import scala.annotation.meta._
+
 import java.io._
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
@@ -32,7 +34,7 @@ import org.apache.spark.streaming.scheduler.JobGenerator
 
 
 private[streaming]
-class Checkpoint(@transient ssc: StreamingContext, val checkpointTime: Time)
+class Checkpoint(@(transient @param @field) ssc: StreamingContext, val checkpointTime: Time)
   extends Logging with Serializable {
   val master = ssc.sc.master
   val framework = ssc.sc.appName

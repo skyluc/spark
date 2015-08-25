@@ -19,6 +19,7 @@ package org.apache.spark.rpc
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.util.RpcUtils
 import org.apache.spark.{SparkException, Logging, SparkConf}
@@ -26,7 +27,7 @@ import org.apache.spark.{SparkException, Logging, SparkConf}
 /**
  * A reference for a remote [[RpcEndpoint]]. [[RpcEndpointRef]] is thread-safe.
  */
-private[spark] abstract class RpcEndpointRef(@transient conf: SparkConf)
+private[spark] abstract class RpcEndpointRef(@(transient @param @field) conf: SparkConf)
   extends Serializable with Logging {
 
   private[this] val maxRetries = RpcUtils.numRetries(conf)

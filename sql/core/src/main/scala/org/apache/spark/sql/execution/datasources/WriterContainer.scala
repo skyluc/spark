@@ -20,6 +20,7 @@ package org.apache.spark.sql.execution.datasources
 import java.util.{Date, UUID}
 
 import scala.collection.JavaConverters._
+import scala.annotation.meta._
 
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.mapreduce._
@@ -38,7 +39,7 @@ import org.apache.spark.util.SerializableConfiguration
 
 private[sql] abstract class BaseWriterContainer(
     @transient val relation: HadoopFsRelation,
-    @transient job: Job,
+    @(transient @param @field) job: Job,
     isAppend: Boolean)
   extends SparkHadoopMapReduceUtil
   with Logging
@@ -220,8 +221,8 @@ private[sql] abstract class BaseWriterContainer(
  * A writer that writes all of the rows in a partition to a single file.
  */
 private[sql] class DefaultWriterContainer(
-    @transient relation: HadoopFsRelation,
-    @transient job: Job,
+    @(transient @param @field) relation: HadoopFsRelation,
+    @(transient @param @field) job: Job,
     isAppend: Boolean)
   extends BaseWriterContainer(relation, job, isAppend) {
 
@@ -283,8 +284,8 @@ private[sql] class DefaultWriterContainer(
  * writer externally sorts the remaining rows and then writes out them out one file at a time.
  */
 private[sql] class DynamicPartitionWriterContainer(
-    @transient relation: HadoopFsRelation,
-    @transient job: Job,
+    @(transient @param @field) relation: HadoopFsRelation,
+    @(transient @param @field) job: Job,
     partitionColumns: Seq[Attribute],
     dataColumns: Seq[Attribute],
     inputSchema: Seq[Attribute],

@@ -17,6 +17,8 @@
 
 package org.apache.spark.rdd
 
+import scala.annotation.meta._
+
 import org.apache.hadoop.conf.{ Configurable, Configuration }
 import org.apache.hadoop.io.Writable
 import org.apache.hadoop.mapreduce._
@@ -28,7 +30,7 @@ private[spark] class BinaryFileRDD[T](
     inputFormatClass: Class[_ <: StreamFileInputFormat[T]],
     keyClass: Class[String],
     valueClass: Class[T],
-    @transient conf: Configuration,
+    @(transient @param @field) conf: Configuration,
     minPartitions: Int)
   extends NewHadoopRDD[String, T](sc, inputFormatClass, keyClass, valueClass, conf) {
 

@@ -21,6 +21,7 @@ import java.io.{IOException, ObjectOutputStream}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.{Dependency, Partition, RangeDependency, SparkContext, TaskContext}
 import org.apache.spark.annotation.DeveloperApi
@@ -37,9 +38,9 @@ import org.apache.spark.util.Utils
  */
 private[spark] class UnionPartition[T: ClassTag](
     idx: Int,
-    @transient rdd: RDD[T],
+    @(transient @param @field)  rdd: RDD[T],
     val parentRddIndex: Int,
-    @transient parentRddPartitionIndex: Int)
+    @(transient @param @field)  parentRddPartitionIndex: Int)
   extends Partition {
 
   var parentPartition: Partition = rdd.partitions(parentRddPartitionIndex)

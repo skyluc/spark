@@ -18,6 +18,7 @@
 package org.apache.spark.streaming.dstream
 
 import scala.reflect.ClassTag
+import scala.annotation.meta._
 
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDDOperationScope
@@ -39,7 +40,7 @@ import org.apache.spark.util.Utils
  *
  * @param ssc_ Streaming context that will execute this input stream
  */
-abstract class InputDStream[T: ClassTag] (@transient ssc_ : StreamingContext)
+abstract class InputDStream[T: ClassTag] (@(transient @param @field) ssc_ : StreamingContext)
   extends DStream[T](ssc_) {
 
   private[streaming] var lastValidTime: Time = null

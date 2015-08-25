@@ -17,6 +17,7 @@
 
 package org.apache.spark.scheduler
 
+import scala.annotation.meta._
 import java.nio.ByteBuffer
 
 import java.io._
@@ -44,7 +45,7 @@ private[spark] class ResultTask[T, U](
     stageAttemptId: Int,
     taskBinary: Broadcast[Array[Byte]],
     partition: Partition,
-    @transient locs: Seq[TaskLocation],
+    @(transient @param @field) locs: Seq[TaskLocation],
     val outputId: Int,
     internalAccumulators: Seq[Accumulator[Long]])
   extends Task[U](stageId, stageAttemptId, partition.index, internalAccumulators)
