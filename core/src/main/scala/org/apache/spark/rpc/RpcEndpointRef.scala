@@ -17,9 +17,9 @@
 
 package org.apache.spark.rpc
 
+import scala.annotation.meta._
 import scala.concurrent.Future
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.spark.util.RpcUtils
 import org.apache.spark.{SparkException, Logging, SparkConf}

@@ -21,9 +21,9 @@ import java.io._
 import java.util.Properties
 import javax.annotation.Nullable
 
+import scala.annotation.meta._
 import scala.collection.JavaConverters._
 import scala.util.control.NonFatal
-import scala.annotation.meta._
 
 import org.apache.hadoop.hive.serde.serdeConstants
 import org.apache.hadoop.hive.serde2.AbstractSerDe

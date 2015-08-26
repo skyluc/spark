@@ -17,10 +17,10 @@
 
 package org.apache.spark.scheduler
 
-import scala.annotation.meta._
+import java.io._
 import java.nio.ByteBuffer
 
-import java.io._
+import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.broadcast.Broadcast

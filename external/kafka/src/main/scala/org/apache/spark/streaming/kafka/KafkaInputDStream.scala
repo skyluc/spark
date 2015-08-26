@@ -19,9 +19,9 @@ package org.apache.spark.streaming.kafka
 
 import java.util.Properties
 
+import scala.annotation.meta._
 import scala.collection.Map
 import scala.reflect.{classTag, ClassTag}
-import scala.annotation.meta._
 
 import kafka.consumer.{KafkaStream, Consumer, ConsumerConfig, ConsumerConnector}
 import kafka.serializer.Decoder

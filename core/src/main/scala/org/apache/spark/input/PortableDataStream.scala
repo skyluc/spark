@@ -19,8 +19,8 @@ package org.apache.spark.input
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 
-import scala.collection.JavaConverters._
 import scala.annotation.meta._
+import scala.collection.JavaConverters._
 
 import com.google.common.io.ByteStreams
 import org.apache.hadoop.conf.Configuration

@@ -19,9 +19,9 @@ package org.apache.spark.streaming.dstream
 
 import java.io.{NotSerializableException, ObjectOutputStream}
 
+import scala.annotation.meta._
 import scala.collection.mutable.{ArrayBuffer, Queue}
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.spark.rdd.{RDD, UnionRDD}
 import org.apache.spark.streaming.{Time, StreamingContext}

@@ -17,9 +17,9 @@
 
 package org.apache.spark.graphx
 
+import scala.annotation.meta._
 import scala.language.existentials
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.spark.Dependency
 import org.apache.spark.Partition

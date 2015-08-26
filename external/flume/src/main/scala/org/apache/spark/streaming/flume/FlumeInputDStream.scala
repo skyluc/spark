@@ -22,9 +22,9 @@ import java.io.{ObjectInput, ObjectOutput, Externalizable}
 import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 
+import scala.annotation.meta._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.flume.source.avro.AvroSourceProtocol
 import org.apache.flume.source.avro.AvroFlumeEvent

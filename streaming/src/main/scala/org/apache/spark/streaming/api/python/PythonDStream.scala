@@ -21,9 +21,9 @@ import java.io.{ObjectInputStream, ObjectOutputStream}
 import java.lang.reflect.Proxy
 import java.util.{ArrayList => JArrayList, List => JList}
 
+import scala.annotation.meta._
 import scala.collection.JavaConverters._
 import scala.language.existentials
-import scala.annotation.meta._
 
 import py4j.GatewayServer
 

@@ -17,10 +17,10 @@
 
 package org.apache.spark.streaming.kafka
 
+import scala.annotation.meta._
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import kafka.common.TopicAndPartition
 import kafka.message.MessageAndMetadata

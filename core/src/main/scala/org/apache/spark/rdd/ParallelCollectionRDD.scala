@@ -19,12 +19,12 @@ package org.apache.spark.rdd
 
 import java.io._
 
+import scala.annotation.meta._
 import scala.Serializable
 import scala.collection.Map
 import scala.collection.immutable.NumericRange
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.serializer.JavaSerializer

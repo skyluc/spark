@@ -17,8 +17,8 @@
 
 package org.apache.spark.rdd
 
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
 
 import org.apache.spark.{Partition, TaskContext}
 import org.apache.spark.util.Utils

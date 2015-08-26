@@ -19,12 +19,12 @@ package org.apache.spark
 
 import java.io.{ObjectInputStream, Serializable}
 
+import scala.annotation.meta._
 import scala.collection.generic.Growable
 import scala.collection.Map
 import scala.collection.mutable
 import scala.ref.WeakReference
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.spark.serializer.JavaSerializer
 import org.apache.spark.util.Utils

@@ -17,8 +17,8 @@
 
 package org.apache.spark.streaming.dstream
 
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
 
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDDOperationScope

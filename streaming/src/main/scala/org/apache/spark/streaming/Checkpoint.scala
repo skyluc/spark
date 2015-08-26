@@ -17,11 +17,11 @@
 
 package org.apache.spark.streaming
 
-import scala.annotation.meta._
-
 import java.io._
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
+
+import scala.annotation.meta._
 
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.conf.Configuration

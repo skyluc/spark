@@ -19,9 +19,9 @@ package org.apache.spark.rdd
 
 import java.io.{IOException, ObjectOutputStream}
 
+import scala.annotation.meta._
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.spark.{Dependency, Partition, RangeDependency, SparkContext, TaskContext}
 import org.apache.spark.annotation.DeveloperApi

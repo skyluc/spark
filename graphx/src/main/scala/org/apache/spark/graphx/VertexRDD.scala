@@ -17,8 +17,8 @@
 
 package org.apache.spark.graphx
 
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
 
 import org.apache.spark._
 import org.apache.spark.SparkContext._

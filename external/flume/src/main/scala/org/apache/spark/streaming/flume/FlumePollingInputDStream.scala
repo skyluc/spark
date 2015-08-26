@@ -20,9 +20,9 @@ package org.apache.spark.streaming.flume
 import java.net.InetSocketAddress
 import java.util.concurrent.{LinkedBlockingQueue, Executors}
 
+import scala.annotation.meta._
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.apache.avro.ipc.NettyTransceiver

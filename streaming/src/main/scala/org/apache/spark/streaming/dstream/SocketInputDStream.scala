@@ -23,8 +23,8 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.util.NextIterator
 
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
 
 import java.io._
 import java.net.{UnknownHostException, Socket}

@@ -21,10 +21,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.io.EOFException
 
+import scala.annotation.meta._
 import scala.collection.immutable.Map
 import scala.reflect.ClassTag
 import scala.collection.mutable.ListBuffer
-import scala.annotation.meta._
 
 import org.apache.hadoop.conf.{Configurable, Configuration}
 import org.apache.hadoop.mapred.FileSplit

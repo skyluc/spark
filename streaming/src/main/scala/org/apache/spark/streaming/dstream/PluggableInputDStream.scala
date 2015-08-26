@@ -17,9 +17,10 @@
 
 package org.apache.spark.streaming.dstream
 
-import org.apache.spark.streaming.StreamingContext
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
+
+import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.receiver.Receiver
 
 private[streaming]

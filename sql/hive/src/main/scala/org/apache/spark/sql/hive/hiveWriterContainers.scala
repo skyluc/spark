@@ -20,8 +20,8 @@ package org.apache.spark.sql.hive
 import java.text.NumberFormat
 import java.util.Date
 
-import scala.collection.mutable
 import scala.annotation.meta._
+import scala.collection.mutable
 
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars

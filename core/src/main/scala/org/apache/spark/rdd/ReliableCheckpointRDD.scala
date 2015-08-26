@@ -19,8 +19,8 @@ package org.apache.spark.rdd
 
 import java.io.IOException
 
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
 
 import org.apache.hadoop.fs.Path
 

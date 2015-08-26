@@ -23,8 +23,8 @@ import org.apache.spark.mllib.random.RandomDataGenerator
 import org.apache.spark.rdd.RDD
 import org.apache.spark.util.Utils
 
-import scala.reflect.ClassTag
 import scala.annotation.meta._
+import scala.reflect.ClassTag
 import scala.util.Random
 
 private[mllib] class RandomRDDPartition[T](override val index: Int,

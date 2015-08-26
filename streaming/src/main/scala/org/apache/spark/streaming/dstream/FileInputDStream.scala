@@ -19,9 +19,9 @@ package org.apache.spark.streaming.dstream
 
 import java.io.{IOException, ObjectInputStream}
 
+import scala.annotation.meta._
 import scala.collection.mutable
 import scala.reflect.ClassTag
-import scala.annotation.meta._
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path, PathFilter}

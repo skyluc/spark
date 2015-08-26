@@ -20,9 +20,9 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.util.UUID
 
+import scala.annotation.meta._
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
-import scala.annotation.meta._
 
 import org.apache.spark._
 import org.apache.spark.rdd.BlockRDD

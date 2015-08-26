@@ -19,11 +19,11 @@ package org.apache.spark.rpc.akka
 
 import java.util.concurrent.ConcurrentHashMap
 
+import scala.annotation.meta._
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
-import scala.annotation.meta._
 
 import akka.actor.{ActorSystem, ExtendedActorSystem, Actor, ActorRef, Props, Address}
 import akka.event.Logging.Error

@@ -21,10 +21,10 @@ import java.io._
 import java.net._
 import java.util.{Collections, ArrayList => JArrayList, List => JList, Map => JMap}
 
+import scala.annotation.meta._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.language.existentials
-import scala.annotation.meta._
 
 import com.google.common.base.Charsets.UTF_8
 import org.apache.hadoop.conf.Configuration

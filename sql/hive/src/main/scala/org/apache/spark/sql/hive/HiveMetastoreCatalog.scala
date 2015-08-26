@@ -17,9 +17,9 @@
 
 package org.apache.spark.sql.hive
 
+import scala.annotation.meta._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.annotation.meta._
 
 import com.google.common.base.Objects
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}

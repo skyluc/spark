@@ -19,10 +19,10 @@ package org.apache.spark
 
 import java.io.{IOException, ObjectInputStream, ObjectOutputStream}
 
+import scala.annotation.meta._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.{ClassTag, classTag}
-import scala.annotation.meta._
 import scala.util.hashing.byteswap32
 
 import org.apache.spark.rdd.{PartitionPruningRDD, RDD}
