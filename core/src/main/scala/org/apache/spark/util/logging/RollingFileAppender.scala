@@ -78,7 +78,7 @@ private[spark] class RollingFileAppender(
   private def moveFile() {
     val rolloverSuffix = rollingPolicy.generateRolledOverFileSuffix()
     val rolloverFile = new File(
-    activeFile.getParentFile, activeFile.getName + rolloverSuffix).getAbsoluteFile
+      activeFile.getParentFile, activeFile.getName + rolloverSuffix).getAbsoluteFile
     logDebug(s"Attempting to rollover file $activeFile to file $rolloverFile")
     if (activeFile.exists) {
       if (!rolloverFile.exists) {
