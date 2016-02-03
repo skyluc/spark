@@ -246,6 +246,12 @@ abstract class Receiver[T](val storageLevel: StorageLevel) extends Serializable 
    * receiver is associated with.
    */
   def streamId: Int = id
+  
+  def useRateLimiterInReceiver: Boolean = false
+
+  def updateRateLimit(eps: Long): Unit = {
+  }
+
 
   /*
    * =================
