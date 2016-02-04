@@ -84,8 +84,12 @@ private[streaming] class ReceiverSupervisorImpl(
           cleanupOldBlocks(threshTime)
         case UpdateRateLimit(eps) =>
           logInfo(s"Received a new rate limit: $eps.")
-          registeredBlockGenerators.asScala.foreach { bg =>
-            bg.updateRate(eps)
+          if (receiver.useRateLimiterInReceiver) {
+            receiver.updateRateLimit(eps)
+          } else {
+            registeredBlockGenerators.asScala.foreach { bg =>
+              bg.updateRate(eps)
+             }
           }
       }
     })
