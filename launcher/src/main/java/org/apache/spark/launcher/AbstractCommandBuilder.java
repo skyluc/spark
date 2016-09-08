@@ -20,8 +20,11 @@ package org.apache.spark.launcher;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +56,8 @@ abstract class AbstractCommandBuilder {
   final Map<String, String> childEnv;
   final Map<String, String> conf;
 
-  // The merged configuration for the application. Cached to avoid having to read / parse
+  // The merged configuration for the application. Cached to avoid having to
+  // read / parse
   // properties files multiple times.
   private Map<String, String> effectiveConfig;
 
@@ -69,23 +73,25 @@ abstract class AbstractCommandBuilder {
   /**
    * Builds the command to execute.
    *
-   * @param env A map containing environment variables for the child process. It may already contain
-   *            entries defined by the user (such as SPARK_HOME, or those defined by the
-   *            SparkLauncher constructor that takes an environment), and may be modified to
-   *            include other variables needed by the process to be executed.
+   * @param env
+   *          A map containing environment variables for the child process. It
+   *          may already contain entries defined by the user (such as
+   *          SPARK_HOME, or those defined by the SparkLauncher constructor that
+   *          takes an environment), and may be modified to include other
+   *          variables needed by the process to be executed.
    */
-  abstract List<String> buildCommand(Map<String, String> env)
-      throws IOException, IllegalArgumentException;
+  abstract List<String> buildCommand(Map<String, String> env) throws IOException, IllegalArgumentException;
 
   /**
    * Builds a list of arguments to run java.
    *
-   * This method finds the java executable to use and appends JVM-specific options for running a
-   * class with Spark in the classpath. It also loads options from the "java-opts" file in the
-   * configuration directory being used.
+   * This method finds the java executable to use and appends JVM-specific
+   * options for running a class with Spark in the classpath. It also loads
+   * options from the "java-opts" file in the configuration directory being
+   * used.
    *
-   * Callers should still add at least the class to run, as well as any arguments to pass to the
-   * class.
+   * Callers should still add at least the class to run, as well as any
+   * arguments to pass to the class.
    */
   List<String> buildJavaCommand(String extraClassPath) throws IOException {
     List<String> cmd = new ArrayList<>();
@@ -94,16 +100,16 @@ abstract class AbstractCommandBuilder {
     if (javaHome != null) {
       cmd.add(join(File.separator, javaHome, "bin", "java"));
     } else if ((envJavaHome = System.getenv("JAVA_HOME")) != null) {
-        cmd.add(join(File.separator, envJavaHome, "bin", "java"));
+      cmd.add(join(File.separator, envJavaHome, "bin", "java"));
     } else {
-        cmd.add(join(File.separator, System.getProperty("java.home"), "bin", "java"));
+      cmd.add(join(File.separator, System.getProperty("java.home"), "bin", "java"));
     }
 
     // Load extra JAVA_OPTS from conf/java-opts, if it exists.
     File javaOpts = new File(join(File.separator, getConfDir(), "java-opts"));
     if (javaOpts.isFile()) {
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          new FileInputStream(javaOpts), StandardCharsets.UTF_8));
+      BufferedReader br = new BufferedReader(
+          new InputStreamReader(new FileInputStream(javaOpts), StandardCharsets.UTF_8));
       try {
         String line;
         while ((line = br.readLine()) != null) {
@@ -128,9 +134,10 @@ abstract class AbstractCommandBuilder {
   }
 
   /**
-   * Builds the classpath for the application. Returns a list with one classpath entry per element;
-   * each entry is formatted in the way expected by <i>java.net.URLClassLoader</i> (more
-   * specifically, with trailing slashes for directories).
+   * Builds the classpath for the application. Returns a list with one classpath
+   * entry per element; each entry is formatted in the way expected by
+   * <i>java.net.URLClassLoader</i> (more specifically, with trailing slashes
+   * for directories).
    */
   List<String> buildClassPath(String appClassPath) throws IOException {
     String sparkHome = getSparkHome();
@@ -145,51 +152,35 @@ abstract class AbstractCommandBuilder {
     boolean isTesting = "1".equals(getenv("SPARK_TESTING"));
     if (prependClasses || isTesting) {
       String scala = getScalaVersion();
-      List<String> projects = Arrays.asList(
-        "common/network-common",
-        "common/network-shuffle",
-        "common/network-yarn",
-        "common/sketch",
-        "common/tags",
-        "common/unsafe",
-        "core",
-        "examples",
-        "graphx",
-        "launcher",
-        "mllib",
-        "repl",
-        "sql/catalyst",
-        "sql/core",
-        "sql/hive",
-        "sql/hive-thriftserver",
-        "streaming",
-        "yarn"
-      );
+      List<String> projects = Arrays.asList("common/network-common", "common/network-shuffle", "common/network-yarn",
+          "common/sketch", "common/tags", "common/unsafe", "core", "examples", "graphx", "launcher", "mllib", "repl",
+          "sql/catalyst", "sql/core", "sql/hive", "sql/hive-thriftserver", "streaming", "yarn");
       if (prependClasses) {
         if (!isTesting) {
           System.err.println(
-            "NOTE: SPARK_PREPEND_CLASSES is set, placing locally compiled Spark classes ahead of " +
-            "assembly.");
+              "NOTE: SPARK_PREPEND_CLASSES is set, placing locally compiled Spark classes ahead of " + "assembly.");
         }
         for (String project : projects) {
-          addToClassPath(cp, String.format("%s/%s/target/scala-%s/classes", sparkHome, project,
-            scala));
+          addToClassPath(cp, String.format("%s/%s/target/scala-%s/classes", sparkHome, project, scala));
         }
       }
       if (isTesting) {
         for (String project : projects) {
-          addToClassPath(cp, String.format("%s/%s/target/scala-%s/test-classes", sparkHome,
-            project, scala));
+          addToClassPath(cp, String.format("%s/%s/target/scala-%s/test-classes", sparkHome, project, scala));
         }
       }
 
-      // Add this path to include jars that are shaded in the final deliverable created during
-      // the maven build. These jars are copied to this directory during the build.
+      // Add this path to include jars that are shaded in the final deliverable
+      // created during
+      // the maven build. These jars are copied to this directory during the
+      // build.
       addToClassPath(cp, String.format("%s/core/target/jars/*", sparkHome));
     }
 
-    // Add Spark jars to the classpath. For the testing case, we rely on the test code to set and
-    // propagate the test classpath appropriately. For normal invocation, look for the jars
+    // Add Spark jars to the classpath. For the testing case, we rely on the
+    // test code to set and
+    // propagate the test classpath appropriately. For normal invocation, look
+    // for the jars
     // directory under SPARK_HOME.
     boolean isTestingSql = "1".equals(getenv("SPARK_SQL_TESTING"));
     String jarsDir = findJarsDir(getSparkHome(), getScalaVersion(), !isTesting && !isTestingSql);
@@ -206,8 +197,10 @@ abstract class AbstractCommandBuilder {
   /**
    * Adds entries to the classpath.
    *
-   * @param cp List to which the new entries are appended.
-   * @param entries New classpath entries (separated by File.pathSeparator).
+   * @param cp
+   *          List to which the new entries are appended.
+   * @param entries
+   *          New classpath entries (separated by File.pathSeparator).
    */
   private void addToClassPath(List<String> cp, String entries) {
     if (isEmpty(entries)) {
@@ -233,8 +226,8 @@ abstract class AbstractCommandBuilder {
     File scala210 = new File(sparkHome, "launcher/target/scala-2.10");
     File scala211 = new File(sparkHome, "launcher/target/scala-2.11");
     checkState(!scala210.isDirectory() || !scala211.isDirectory(),
-      "Presence of build for both scala versions (2.10 and 2.11) detected.\n" +
-      "Either clean one of them or set SPARK_SCALA_VERSION in your environment.");
+        "Presence of build for both scala versions (2.10 and 2.11) detected.\n"
+            + "Either clean one of them or set SPARK_SCALA_VERSION in your environment.");
     if (scala210.isDirectory()) {
       return "2.10";
     } else {
@@ -245,8 +238,7 @@ abstract class AbstractCommandBuilder {
 
   String getSparkHome() {
     String path = getenv(ENV_SPARK_HOME);
-    checkState(path != null,
-      "Spark home not found; set it explicitly or use the SPARK_HOME environment variable.");
+    checkState(path != null, "Spark home not found; set it explicitly or use the SPARK_HOME environment variable.");
     return path;
   }
 
@@ -273,35 +265,49 @@ abstract class AbstractCommandBuilder {
   }
 
   /**
-   * Loads the configuration file for the application, if it exists. This is either the
-   * user-specified properties file, or the spark-defaults.conf file under the Spark configuration
-   * directory.
+   * Loads the configuration file for the application, if it exists. This is
+   * either the user-specified properties file, or the spark-defaults.conf file
+   * under the Spark configuration directory.
    */
   private Properties loadPropertiesFile() throws IOException {
     Properties props = new Properties();
-    File propsFile;
+
     if (propertiesFile != null) {
-      propsFile = new File(propertiesFile);
-      checkArgument(propsFile.isFile(), "Invalid properties file '%s'.", propertiesFile);
-    } else {
-      propsFile = new File(getConfDir(), DEFAULT_PROPERTIES_FILE);
     }
 
-    if (propsFile.isFile()) {
-      FileInputStream fd = null;
-      try {
-        fd = new FileInputStream(propsFile);
-        props.load(new InputStreamReader(fd, StandardCharsets.UTF_8));
-        for (Map.Entry<Object, Object> e : props.entrySet()) {
-          e.setValue(e.getValue().toString().trim());
+    InputStream fd = null;
+    try {
+      File propsFile;
+      if (propertiesFile != null) {
+        try {
+          URL urlPropsFile = new URL(propertiesFile);
+          fd = urlPropsFile.openConnection().getInputStream();
+        } catch (MalformedURLException e) {
+          // not a URL
+        } catch (IOException e) {
+          // not a working URL
         }
-      } finally {
-        if (fd != null) {
-          try {
-            fd.close();
-          } catch (IOException e) {
-            // Ignore.
-          }
+        if (fd == null) {
+          propsFile = new File(propertiesFile);
+          checkArgument(propsFile.isFile(), "Invalid properties file '%s'.", propertiesFile);
+          fd = new FileInputStream(propsFile);
+        }
+      } else {
+        propsFile = new File(getConfDir(), DEFAULT_PROPERTIES_FILE);
+        checkArgument(propsFile.isFile(), "Invalid properties file '%s'.", propertiesFile);
+        fd = new FileInputStream(propsFile);
+      }
+
+      props.load(new InputStreamReader(fd, StandardCharsets.UTF_8));
+      for (Map.Entry<Object, Object> e : props.entrySet()) {
+        e.setValue(e.getValue().toString().trim());
+      }
+    } finally {
+      if (fd != null) {
+        try {
+          fd.close();
+        } catch (IOException e) {
+          // Ignore.
         }
       }
     }

@@ -1960,11 +1960,25 @@ private[spark] object Utils extends Logging {
 
   /** Load properties present in the given file. */
   def getPropertiesFromFile(filename: String): Map[String, String] = {
-    val file = new File(filename)
-    require(file.exists(), s"Properties file $file does not exist")
-    require(file.isFile(), s"Properties file $file is not a normal file")
+    val fd = try {
+      val urlPropsFile = new URL(filename)
+      Some(urlPropsFile.openConnection().getInputStream())
+    } catch {
+      case e: MalformedURLException =>
+        // not a working URL
+        None
+      case e: IOException =>
+        // not a working URL
+        None
+    }
 
-    val inReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)
+    val inReader = fd.map(new InputStreamReader(_)).getOrElse {
+      val file = new File(filename)
+      require(file.exists(), s"Properties file $file does not exist")
+      require(file.isFile(), s"Properties file $file is not a normal file")
+
+      new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)
+    }
     try {
       val properties = new Properties()
       properties.load(inReader)
